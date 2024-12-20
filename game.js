@@ -1,4 +1,3 @@
-
 var buttonColours = ["red", "blue", "green", "yellow"];
 
 var gamePattern = [];
@@ -22,17 +21,18 @@ $(document).keypress(function() {
 });
 
 $(".btn").click(function() {
+  if (!started) return;  // Prevent clicks before game starts
 
   var userChosenColour = $(this).attr("id");
   userClickedPattern.push(userChosenColour);
 
-  //1. In the same way we played sound in nextSequence() , when a user clicks on a button, the corresponding sound should be played.
   playSound(userChosenColour);
-
   animatePress(userChosenColour);
 
-  //2. Call checkAnswer() after a user has clicked and chosen their answer, passing in the index of the last answer in the user's sequence.
-  checkAnswer(userClickedPattern.length-1);
+  // Wait for animation to complete before checking answer
+  setTimeout(function() {
+    checkAnswer(userClickedPattern.length-1);
+  }, 100);
 });
 
 
@@ -102,7 +102,12 @@ function playSound(name) {
 
   //3. Take the code we used to play sound in the nextSequence() function and add it to playSound().
   var audio = new Audio("sounds/" + name + ".mp3");
-  audio.play();
+  audio.onerror = function() {
+    console.error("Error loading sound: " + name);
+  };
+  audio.play().catch(function(error) {
+    console.error("Error playing sound: " + error);
+  });
 }
 
 //1. Create a new function called animatePress(), it should take a single input parameter called currentColour.
