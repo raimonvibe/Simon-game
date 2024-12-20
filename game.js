@@ -9,6 +9,9 @@ var started = false;
 //2. Create a new variable called level and start at level 0.
 var level = 0;
 
+// Voeg een score variabele toe bovenaan
+var highScore = 0;
+
 //1. Use jQuery to detect when a keyboard key has been pressed, when that happens for the first time, call nextSequence().
 $(document).keypress(function() {
   if (!started) {
@@ -48,6 +51,12 @@ function checkAnswer(currentLevel) {
       //4. If the user got the most recent answer right in step 3, then check that they have finished their sequence with another if statement.
       if (userClickedPattern.length === gamePattern.length){
 
+        // Update highscore als het huidige level hoger is
+        if (level > highScore) {
+          highScore = level;
+          $("#high-score").text("Hoogste Score: " + highScore);
+        }
+
         //5. Call nextSequence() after a 1000 millisecond delay.
         setTimeout(function () {
           nextSequence();
@@ -62,7 +71,7 @@ function checkAnswer(currentLevel) {
       playSound("wrong");
 
       $("body").addClass("game-over");
-      $("#level-title").text("Game Over, Press Any Key to Restart");
+      $("#level-title").text("Game Over! Hoogste Score: " + highScore + " - Druk op een toets om opnieuw te beginnen");
 
       setTimeout(function () {
         $("body").removeClass("game-over");
@@ -90,12 +99,15 @@ function nextSequence() {
   var randomChosenColour = buttonColours[randomNumber];
   gamePattern.push(randomChosenColour);
 
-  $("#" + randomChosenColour).fadeIn(100).fadeOut(100).fadeIn(100);
+  // Pas de animatiesnelheid aan op basis van het level
+  var animationSpeed = Math.max(50, 100 - (level * 2));
+
+  $("#" + randomChosenColour).fadeIn(animationSpeed).fadeOut(animationSpeed).fadeIn(animationSpeed);
 
   // Wait for animation to complete before playing sound
   setTimeout(function() {
     playSound(randomChosenColour);
-  }, 300);
+  }, animationSpeed * 3);
 }
 
 //2. Create a new function called playSound() that takes a single input parameter called name.
