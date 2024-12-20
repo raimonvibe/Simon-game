@@ -24,18 +24,21 @@ $(document).keypress(function() {
 });
 
 $(".btn").click(function() {
-  if (!started) return;  // Prevent clicks before game starts
+  if (!started) {
+    $("#level-title").text("Level " + level);
+    nextSequence();
+    started = true;
+  } else {
+    var userChosenColour = $(this).attr("id");
+    userClickedPattern.push(userChosenColour);
 
-  var userChosenColour = $(this).attr("id");
-  userClickedPattern.push(userChosenColour);
+    playSound(userChosenColour);
+    animatePress(userChosenColour);
 
-  playSound(userChosenColour);
-  animatePress(userChosenColour);
-
-  // Wait for animation to complete before checking answer
-  setTimeout(function() {
-    checkAnswer(userClickedPattern.length-1);
-  }, 100);
+    setTimeout(function() {
+      checkAnswer(userClickedPattern.length-1);
+    }, 100);
+  }
 });
 
 
@@ -51,10 +54,10 @@ function checkAnswer(currentLevel) {
       //4. If the user got the most recent answer right in step 3, then check that they have finished their sequence with another if statement.
       if (userClickedPattern.length === gamePattern.length){
 
-        // Update highscore als het huidige level hoger is
+        // Update high score if current level is higher
         if (level > highScore) {
           highScore = level;
-          $("#high-score").text("Hoogste Score: " + highScore);
+          $("#high-score").text("High Score: " + highScore);
         }
 
         //5. Call nextSequence() after a 1000 millisecond delay.
@@ -71,7 +74,8 @@ function checkAnswer(currentLevel) {
       playSound("wrong");
 
       $("body").addClass("game-over");
-      $("#level-title").text("Game Over! Hoogste Score: " + highScore + " - Druk op een toets om opnieuw te beginnen");
+      // Update game over message with high score in English
+      $("#level-title").text("Game Over! High Score: " + highScore + " - Press Any Key to Restart");
 
       setTimeout(function () {
         $("body").removeClass("game-over");
