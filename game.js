@@ -1,4 +1,3 @@
-
 var buttonColours = ["red", "blue", "green", "yellow"];
 
 var gamePattern = [];
@@ -22,17 +21,18 @@ $(document).keypress(function() {
 });
 
 $(".btn").click(function() {
+  if (!started) return;  // Prevent clicks before game starts
 
   var userChosenColour = $(this).attr("id");
   userClickedPattern.push(userChosenColour);
 
-  //1. In the same way we played sound in nextSequence() , when a user clicks on a button, the corresponding sound should be played.
   playSound(userChosenColour);
-
   animatePress(userChosenColour);
 
-  //2. Call checkAnswer() after a user has clicked and chosen their answer, passing in the index of the last answer in the user's sequence.
-  checkAnswer(userClickedPattern.length-1);
+  // Wait for animation to complete before checking answer
+  setTimeout(function() {
+    checkAnswer(userClickedPattern.length-1);
+  }, 100);
 });
 
 
@@ -61,13 +61,12 @@ function checkAnswer(currentLevel) {
       //1. In the sounds folder, there is a sound called wrong.mp3, play this sound if the user got one of the answers wrong.
       playSound("wrong");
 
-      //2. In the styles.css file, there is a class called "game-over", apply this class to the body of the website when the user gets one of the answers wrong and then remove it after 200 milliseconds.
       $("body").addClass("game-over");
       $("#level-title").text("Game Over, Press Any Key to Restart");
 
       setTimeout(function () {
         $("body").removeClass("game-over");
-      }, 200);
+      }, 800);
 
       //3. Change the h1 title to say "Game Over, Press Any Key to Restart" if the user got the answer wrong.
 
@@ -93,8 +92,10 @@ function nextSequence() {
 
   $("#" + randomChosenColour).fadeIn(100).fadeOut(100).fadeIn(100);
 
-  //4. Refactor the code in playSound() so that it will work for both playing sound in nextSequence() and when the user clicks a button.
-  playSound(randomChosenColour);
+  // Wait for animation to complete before playing sound
+  setTimeout(function() {
+    playSound(randomChosenColour);
+  }, 300);
 }
 
 //2. Create a new function called playSound() that takes a single input parameter called name.
@@ -102,7 +103,12 @@ function playSound(name) {
 
   //3. Take the code we used to play sound in the nextSequence() function and add it to playSound().
   var audio = new Audio("sounds/" + name + ".mp3");
-  audio.play();
+  audio.onerror = function() {
+    console.error("Error loading sound: " + name);
+  };
+  audio.play().catch(function(error) {
+    console.error("Error playing sound: " + error);
+  });
 }
 
 //1. Create a new function called animatePress(), it should take a single input parameter called currentColour.
