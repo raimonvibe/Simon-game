@@ -1,3 +1,5 @@
+*Credits go out to the App Brewery from who I learned how to build this program 
+
 # Simon-game
 
 Play the game here: [Simon Game](https://raimonvibe.github.io/Simon-game/)
