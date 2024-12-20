@@ -92,8 +92,10 @@ function nextSequence() {
 
   $("#" + randomChosenColour).fadeIn(100).fadeOut(100).fadeIn(100);
 
-  //4. Refactor the code in playSound() so that it will work for both playing sound in nextSequence() and when the user clicks a button.
-  playSound(randomChosenColour);
+  // Wait for animation to complete before playing sound
+  setTimeout(function() {
+    playSound(randomChosenColour);
+  }, 300);
 }
 
 //2. Create a new function called playSound() that takes a single input parameter called name.
